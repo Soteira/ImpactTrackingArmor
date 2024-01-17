@@ -31,6 +31,8 @@ const int LEDPIN = D7;
 const int YELLOWBUTTON = D6;
 const int PIXELCOUNT = 12;
 const int NEOPIXEL = D18;
+int i;
+int j;
 
 Adafruit_NeoPixel pixel(PIXELCOUNT, SPI1, WS2812B);
 
@@ -54,7 +56,7 @@ WiFi.on();
  }
  Serial.printf("\n\n");
 
-delay(10000);
+delay(1000);
 setHue(4, true, HueGreen, 255, 255);
 pinMode (LEDPIN,OUTPUT);
 pinMode (YELLOWBUTTON,INPUT);
@@ -65,6 +67,15 @@ pinMode (NEOPIXEL, OUTPUT);  //Tell the D18 pin to function on output mode
     pixel.begin();
     pixel.setBrightness(30);
     pixel.show();
+
+
+    for(i=0;i<13;i++){
+      //pixel.clear();
+      pixel.setPixelColor(i,0,255,0);
+      pixel.show();
+      //delay(1000) 
+    }
+    j=12; // set the starting value for the red health counter leds.  It will count down from here.
 
 }
 
@@ -104,49 +115,48 @@ Serial.printf("Armour Sensor Value = %i\n",maximum);
   // Average baseline for the sensor is about 25.  Any significant change in pressure shoul push the value above 50.
   if(maximum>50) {
     //delay(1000);
-    setHue(4, true, HueRed, 255, 255);
+    
+    setHue(4, true, HueRed, 255, 255);  // Turn on 3 of the Hue Ligts in the color green.
+    setHue(3, true, HueRed, 255, 255);
+    setHue(2, true, HueRed, 255, 255);
     //delay(1000);
     switchON(0);
     switchON(3);
     switchON(4);
-    delay(1000);
+    setHue(4, true, HueGreen, 255, 255);
+    setHue(3, true, HueGreen, 255, 255);
+    setHue(2, true, HueGreen, 255, 255);
     switchOFF(0);
     switchOFF(3);
     switchOFF(4);
+    
     //delay(1000);
     // SwitchON and OFF activate and deactivat the HUE outlets lighting the arious objects in the room.  While they
     // initially are using a delay this will be replaced in later version.
-    digitalWrite(D7, HIGH);
-    delay(1000);
-  } else {
-    //delay(1000);
-    setHue(4, true, HueGreen, 255, 255);
-    digitalWrite(D7, LOW);
-
-
-
-    //timerCurrent=timerPrior;
-  }
-
-
+    //digitalWrite(D7, HIGH);
+    
+      j--;
+      pixel.setPixelColor(j,255,0,0);
+      pixel.show();
+      delay(1000);
+    
+  } 
 
 pinState = digitalRead(YELLOWBUTTON);
 Serial.printf("The value of the button is %i \n", pinState);
 
-  if (pinState<1){
+  if (pinState>0){
     digitalWrite (D7, HIGH);
+        for(i=0;i<13;i++){
+      //pixel.clear();
+      pixel.setPixelColor(i,0,255,0);
+      
+      //delay(1000) 
+    }
+    pixel.show();
   }
-  //digitalWrite(D7, LOW);
-  //delay(10000);
-  //digitalWrite(D7, HIGH);
-  //delay(10000);
 
-    pixel.setPixelColor(3, 100, 100, 100); // selects pixel and defines its color with RGB values.
-
-    digitalWrite(D18, HIGH);  // Activate pin D18 
-
-    pixel.clear();            // Clear refreshes all values to default off
-    pixel.show();             // Show activates the new cleared values.
-  delay(1000);
-
+    //pixel.clear();  // Clear refreshes all values to default off
+    //pixel.setPixelColor(3, 100, 100, 100); // selects pixel and defines its color with RGB values.
+    
 }
